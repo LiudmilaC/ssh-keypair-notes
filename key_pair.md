@@ -88,8 +88,8 @@ id_ed25519
 Then for the next 2 lines when asking you for a passphrase, just hit ENTER key twice, to bypass it. It should look something like this:
 
 
-  ![SSH Diagram](images/Screenshot1.png)
-
+  ![SSH Diagram](images/image-one.png)
+  
 
 Now, I run the command `ls` and I see my two keys OR rather see my 2 files named by aws-instance, that contain the keys (the text) - one file with the private key and another file with the public key.
 
@@ -171,8 +171,8 @@ Say you don’t feel comfortable with the copy/paste option. You can also do it 
 What happens here is, AWS reads your .pub file, and stores the PUBLIC key in AWS Key Pairs. And you get a result such as this:
 
 
-  ![SSH Diagram](images/Screenshot2.png)
-
+  ![SSH Diagram](images/image-two.png)
+  
 
 ### Option 3: Add Public Key DIRECTLY to an Existing EC2 Instance
 
@@ -212,7 +212,7 @@ And, by the attached image, we can see we were able to scp the new public key to
 And we can see in the authorized_keys file both keys listed as well. 
 
 
-  ![SSH Diagram](images/Screenshot3.png)
+  ![SSH Diagram](images/image-three.png)
 
 
 Hope this helps someone! Happy learning, and see you in the next one!
