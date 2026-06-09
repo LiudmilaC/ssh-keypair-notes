@@ -1,4 +1,4 @@
-### Option 1: Create Key Pair While Launching EC2 Instance
+## Option 1: Create Key Pair While Launching EC2 Instance
 
 Steps:
 
@@ -10,27 +10,30 @@ Steps:
 3. Click: Create key pair
 
 This is what happens:
+  - AWS stores the PUBLIC key (inside your Key Pairs). AWS can now use this public key for EC2 authentication.
+  - Your browser downloads the PRIVATE key to your Downloads directory (folder) on your Mac.
+  - If you `ls` into your `~/Downloads` directory, you will find your PRIVATE key there. It will look like `my-aws-key.pem`
 
-- AWS stores the PUBLIC key (inside your Key Pairs). AWS can now use this public key for EC2 authentication.
-- Your browser downloads the PRIVATE key to your Downloads directory (folder) on your Mac.
-    - If you `ls` into your `~/Downloads` directory, you will find your PRIVATE key there. It will look like `my-aws-key.pem`
-
-### Option 2: Create Key Pair in AWS BEFORE Creating EC2
+## Option 2: Create Key Pair in AWS BEFORE Creating EC2
 
 If you select Key Pair from the menu column under the EC2 → Network & Security topic. You can choose to create a new Key Pair there, follow the same steps. The same outcome, PUBLIC key gets stored on AWS, and PRIVATE key (which ends in .pem) gets stored on your Downloads directory on your Mac. 
 
 **Remember: AWS never stores your private .pem file. Only you have it.**  
-
-- AWS stores the Public key
-- Your Mac stores the Private key (.pem)
+  - AWS stores the Public key
+  - Your Mac stores the Private key (.pem)
 
 #### NOTE: Advisement
 
-It is advised to move your private key from `~/Downloads/` directory to your `~./ssh/` directory for security purposes - it is the standard SSH location on Mac/Linux. You should already have that directory, if not create it - `mkdir -p ~/.ssh` Then move your key. 
+It is considered best practice to move your private key from `~/Downloads/` directory to your `~./ssh/` directory. WHY? Because:
+
+  - SSH tools automatically look there. It keeps keys organized. It’s more secure/private. Easier to manage many keys. It is the standard Linux/macOS convention.
+  - And, because that’s the “home” for AWS keys, GitHub SSH keys, Linux server keys, personal SSH configs.
+
+You should already have that directory, if not create it - `mkdir -p ~/.ssh` Then move your key. 
 
 Example: `mv ~/Downloads/my-aws-key.pem ~/.ssh/` 
 
-Once you `cd` into your `.ssh` directory, run the command `chmod 400 ~/.ssh/my-aws-key.pem` , this gives secure permissions, without this, SSH may refuse the key.
+Once you `cd` into your `.ssh` directory, run the command `chmod 400 ~/.ssh/my-aws-key.pem` , this gives secure permissions. Without this, SSH may refuse the key.
 
 #### Connecting to your EC2 from your local machine
 
@@ -46,11 +49,11 @@ SSH into EC2: `ssh -i ~/.ssh/my-key.pem ec2-user@PUBLIC_IP` or
 
  `ssh -i ~/.ssh/my-aws-key.pem ec2-user@3.145.22.100` 
 
-- First time SSH Message: “The authenticity of host can’t be established…”
+  - First time SSH Message: “The authenticity of host can’t be established…”
     - Type: yes
     - And, you should be in.
 
-#### Option 3: Create SSH Key Pair on YOUR COMPUTER FIRST
+## Option 3: Create SSH Key Pair on YOUR COMPUTER FIRST
 
 - Instead of AWS generating the key, you generate it locally in your Terminal.
 - To generate the Key on Mac/Linux - there are several key types.
@@ -60,72 +63,75 @@ SSH into EC2: `ssh -i ~/.ssh/my-key.pem ec2-user@PUBLIC_IP` or
     Options: 
     
     - `ssh-keygen -t ed25519 -C "email"`  - optional label/comment (-C stands for comment). This can be either your email or label or anything you want. Or you can skip the label and name the file. See below examples.
-    - `ssh-keygen -t rsa -b 4096` - RSA key size
+    - `ssh-keygen -t rsa -b 4096` - RSA key size (stronger RSA key)
         - 2048 Good security/Faster Speed/Older standard
         - 3072 Better security/Slightly slower/Modern default
         - 4096 Very strong security/Slightly slower/Common recommendation
 
 For Example:  In my `~/.ssh` directory, I run `ssh-keygen -t ed25519`
 
-Terminal Message: 
+Terminal Shell Message: 
 
 % Generating public/private ed25519 key pair. 
 
-Here, I DO NOT enter 3 times, but instead, first I give it a name, for example:
+DO NOT hit ENTER 3 times, but instead, first I give it a name, for example:
 
 % Enter file in which to save the key (Users/YourName/.ssh/id_ed25519): 
 
-Here I enter:  aws-instance 
+Here I enter a key name example:  aws-instance 
 
-- otherwise it will not get saved as id_ed25519, but as aws-instance
+- otherwise SSH uses the default name of id_ed25519 instead.
 
-Then for the next 2 lines when asking you for a passphrase, just hit enter key twice, to bypass it. It should look something like this:
+Then for the next 2 lines when asking you for a passphrase, just hit ENTER key twice, to bypass it. It should look something like this:
 
-![SSH Diagram](images/screenshot1.png)
+![SSH Diagram](images/Screenshot1.png)
 
-Now, I run the command `ls` and I see my two keys OR rather my 2 files which I named by aws-instance, that contain the keys - one file with the private key and another file with the public key.
+Now, I run the command `ls` and I see my two keys OR rather see my 2 files named by aws-instance, that contain the keys (the text) - one file with the private key and another file with the public key.
 
 - aws-instance (with the secret key)
 - aws-instance.pub (with the public/shareable key)
 
 #### Good to Know:
 
-1. Remember, your keys are stored in files, even though we call them keys. But those files contain your keys (keys are a lines of encrypted text). 
+1. Remember, your keys are stored in files, even though we call them keys. But those files contain your keys (keys are lines of encrypted text). 
 2. In the example above, note that our private key doesn’t have a `.pem` at the end. That’s because Linux/macOS SSH tools traditionally DO NOT require extensions.  
 3. When AWS creates a key pair, it intentionally gives it a `.pem` format (easier for compatibility and common for cloud providers). 
 4. How does SSH know?
-    1. The ED25519 private keys start like this
+    a. The ED25519 private keys start like this
         
         `---BEGIN OPENSSH PRIVATE KEY-----`
         
-    2. The PEM-style (RSA) private keys start like this
+    b. The PEM-style (RSA) private keys start like this
         
         `----BEGIN RSA PRIVATE KEY-----`
         
-    3. The ED25519 public keys start like this
+    c. The ED25519 public keys start like this
         
-        `ssh-ed25519 AAAAC3Nza....`
+        `ssh-ed25519 AAAAC3Nza....` And it will end with the file name or email or any other extension if you gave it any at the creation. Also, ED25519 public keys are shorter in length compared to RSA public keys.
         
-        And it will end with the file name or email or any other extension if you gave it any at the creation. Also, ED25519 public keys are shorter in length compared to RSA public keys.
-        
-    4. The RSA public keys start like this
+    d. The RSA public keys start like this
         
         `ssh-rsa AAAAB3Nz...` These can also end with a file name or email or any other extension if it was given at the creation. Also, RSA public keys are longer in length compared to ED25519 public keys. 
         
-5. You can also rename the private keys - with or without the .pem extension. Ex: from aws-instance to aws-instance.pem if easier for you to know that it’s a file containing a key, using the `mv` command. However, I personally would keep it AS IS.  If it contains a  .pem extension, you’ll know right away that it was created initially in AWS and not on your computer. Thus the public keys of those keys ending in .pem aren’t on your computer at all, you’ll notice. 
+5. You can also rename the private keys - with or without the .pem extension. 
+    - Ex: from aws-instance to aws-instance.pem if easier for you to know that it’s a file containing a key, using the `mv` command. 
+    - However, I personally would keep it AS IS.  If it contains a .pem extension, you’ll know right away that it was created initially in AWS and not on your computer. Plus, you'll notice that the public keys of those .pem keys aren’t even there, but in your AWS. 
 6. Why 2 keys?  
-    1. Private key - stays on your computer / secret / used to authenticate
-    2. Public key - safe to upload to AWS/GitHub/Linux servers etx.
+    a. Private key - stays on your computer / secret / used to authenticate
+    b. Public key - safe to upload to AWS/GitHub/Linux servers etx.
     
     **Public key is the lock, and Private key is your key to the lock.**
     
-    **Remember: For Good practice -** 
+    **Remember:** 
+    On your local machine, store your public/private keys (files) in your `~/.ssh` directory. Just like the cloud stores the public keys in its .ssh directory, in the file called authorized_keys. Never store private keys carelessly like Desktop, Downloads, or some other random folder. 
     
-    **On your local machine, store your public/private keys (files) in your .SSH directory. Just like the cloud stores the public keys in its .ssh directory, in the file called authorized_keys.**
+7. Permissions matter. SSH is strict.
+    1. `chmod 700 ~/.ssh`
+    2. `chmod 400 ~/.ssh/my-aws-key.pem`
 
-### How to use Your Own Key in AWS
+## How to use Your Own Key in AWS
 
-Option 1: 
+### Option 1: Copy/Paste your public key to AWS
 
 Say you created key pairs in your local machine. And, you named them: 
 
@@ -144,6 +150,27 @@ Say you created key pairs in your local machine. And, you named them:
 5. Paste the public key contents into the text box, and click Import Key Pair. 
 
 That’s it. When you are ready to create an EC2 instance, you can select this ‘existing’ key from your Key Pair selections.
+
+### Option 2: Import Public Key into AWS Key Pairs using CLI.
+
+Say you don’t feel comfortable with the copy/paste option. You can also do it strictly through your CLI. 
+
+1. Generate keys locally: Run `ssh-keygen -t ed25519` Suppose you named the files as such:
+    
+    `~/.ssh/my-key`
+    `~/.ssh/my-key.pub`
+    
+2. In CLI, run `aws --version`  (Install AWS CLI if not installed).
+3. Import PUBLIC key into AWS
+    
+    `aws ec2 import-key-pair \
+      --key-name "my-key" \
+      --public-key-material fileb://~/.ssh/my-key.pub`
+    
+What happens here is, AWS reads your .pub file, and stores the PUBLIC key in AWS Key Pairs. And you get a result such as this:
+
+![SSH Diagram](images/Screenshot2.png)
+
 
 
 (to be continued)
