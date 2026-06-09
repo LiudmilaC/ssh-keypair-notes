@@ -32,19 +32,23 @@ Example: `mv ~/Downloads/my-aws-key.pem ~/.ssh/`
 
 Once you `cd` into your `.ssh` directory, run the command `chmod 400 ~/.ssh/my-aws-key.pem` , this gives secure permissions, without this, SSH may refuse the key.
 
-#### Connecting to your EC2
+#### Connecting to your EC2 from your local machine
 
 In your AWS, make sure your EC2 instance is Running. Obtain the Public IP address (note, the address will have periods between the numbers, not dashes. Dashes is for IP DNS name). 
 
 Example of public ip: `3.145.22.100`
 
-While you are in your `~/.ssh/` directory, 
+Make sure you correct the permissions. Say you are working with `my-key.pem` 
 
-- run `ssh -i ~/.ssh/my-key.pem ec2-user@PUBLIC_IP` or
-    - with this example `ssh -i ~/.ssh/my-aws-key.pem ec2-user@3.145.22.100`
+Run: `chmod 400 ~/.ssh/my-key.pem`
+
+SSH into EC2: `ssh -i ~/.ssh/my-key.pem ec2-user@PUBLIC_IP` or
+
+ `ssh -i ~/.ssh/my-aws-key.pem ec2-user@3.145.22.100` 
+
 - First time SSH Message: “The authenticity of host can’t be established…”
-- Type: yes
-- And, you should be in.
+    - Type: yes
+    - And, you should be in.
 
 #### Option 3: Create SSH Key Pair on YOUR COMPUTER FIRST
 
@@ -118,5 +122,28 @@ Now, I run the command `ls` and I see my two keys OR rather my 2 files which I n
     **Remember: For Good practice -** 
     
     **On your local machine, store your public/private keys (files) in your .SSH directory. Just like the cloud stores the public keys in its .ssh directory, in the file called authorized_keys.**
+
+### How to use Your Own Key in AWS
+
+Option 1: 
+
+Say you created key pairs in your local machine. And, you named them: 
+
+`aws-key` and `aws-key.pub`
+
+1. Go to  EC2 Console → Key Pairs
+2. Click on Import Key Pair
+3. Give it a name - `my-local-key` for example
+    1. You don’t have to add .pub at the end, AWS already knows you’re giving it your public key, and not your private key, right? 🙂 
+4. Since it’s an absolute path run this command from anywhere, 
+    
+    `cat ~/.ssh/my-local-key.pub`
+    
+    - This will show you the key - the entire output.
+    - Do not worry that you are copying and pasting - this is normal, and safe. You’re not copying your private key, but the public key.
+5. Paste the public key contents into the text box, and click Import Key Pair. 
+
+That’s it. When you are ready to create an EC2 instance, you can select this ‘existing’ key from your Key Pair selections.
+
 
 (to be continued)
