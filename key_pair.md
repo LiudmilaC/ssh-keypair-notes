@@ -204,3 +204,9 @@ Try SSH-ing into the instance with the new public key you created.
 4. Fix Permissions in your EC2 as well - Good practice:
     a. `chmod 700 ~/.ssh`
     b. `chmod 400 ~/.ssh/authorized_keys`
+
+And, by the attached image, we can see we were able to scp the new public key to the EC2, we were able to SSH into the instance with both keys.
+And we can see in the authorized_keys file both keys listed as well. 
+![SSH Diagram](images/Screenshot3.png)
+
+Hope this helps someone! 
