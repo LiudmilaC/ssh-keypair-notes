@@ -151,7 +151,7 @@ Say you created key pairs in your local machine. And, you named them:
 
 That’s it. When you are ready to create an EC2 instance, you can select this ‘existing’ key from your Key Pair selections.
 
-### Option 2: Import Public Key into AWS Key Pairs using CLI.
+### Option 2: Import Public Key into AWS Key Pairs using CLI (before creating any EC2 instance).
 
 Say you don’t feel comfortable with the copy/paste option. You can also do it strictly through your CLI. 
 
@@ -171,6 +171,36 @@ What happens here is, AWS reads your .pub file, and stores the PUBLIC key in AWS
 
 ![SSH Diagram](images/Screenshot2.png)
 
+### Option 3: Add Public Key DIRECTLY to an Existing EC2 Instance
 
+#### Option A: Copy/Paste
 
-(to be continued)
+Instead of importing into AWS Key Pairs menu, you add the public key directly onto the Linux server. On the EC2 instance, Linux stores allowed public keys inside this .ssh directory, under file called authorized_keys:
+
+`~/.ssh/authorized_keys` 
+
+One way, would be COPY/PASTE.
+
+From your local environment (local terminal): `cat ~/.ssh/my-key.pub`  copy the key
+
+Log on EC2: `vi ~/.ssh/authorized_keys` insert/paste the public key text, Save using wq: and Done. 
+
+Try SSH-ing into the instance with the new public key you created. 
+
+#### OPTION 4 — SCP + authorized_keys
+
+1. Run: `ssh -i ~/.ssh/Class9Key.pem ec2-user@PUBLIC_IP` , to make sure you can ssh into your existing instance - thus you just opened your EC2 Terminal.
+2. Open a 2nd Terminal (you’re in your local environment now) and copy the NEW public key that you created to be transferred to the server - This is your new key  `~/.ssh/my-key.pub`
+    
+       So, run: `scp -i ~/.ssh/Class9Key.pem ~/.ssh/my-key.pub ec2-user@54.88.57.68:~`
+    
+    This command is copying the public key file to your EC2 home directory.  NOTE: it’s copying the file but not the contents with it. Thus you need to run one more command.
+    
+3. Back in your EC2 terminal :
+    
+    Run `cat ~/my-key.pub >> ~/.ssh/authorized_keys`
+    Make sure you use >> which means append (to add to), and not > (overwrite).
+    
+4. Fix Permissions in your EC2 as well - Good practice:
+    a. `chmod 700 ~/.ssh`
+    b. `chmod 400 ~/.ssh/authorized_keys`
