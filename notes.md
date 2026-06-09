@@ -119,3 +119,4 @@ Now, I run the command `ls` and I see my two keys OR rather my 2 files which I n
     
     **On your local machine, store your public/private keys (files) in your .SSH directory. Just like the cloud stores the public keys in its .ssh directory, in the file called authorized_keys.**
 
+(to be continued)
