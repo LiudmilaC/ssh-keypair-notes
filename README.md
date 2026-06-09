@@ -18,4 +18,4 @@ These are my notes from learning about SSH key pairs, authentication, and secure
 
 ## Images
 
-![SSH Diagram](images/screenshot.png)
+Screenshot images used within the text.
